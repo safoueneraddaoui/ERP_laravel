@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vision
+data:
+  APP_NAME: VisionERP
+  APP_ENV: development
+  APP_KEY: base64:Aw6xBIhuG3rEB9y0IyPxQYYYv9ebDsKsGuQuY5j8hvs=
+  APP_DEBUG: "true"
+  APP_URL_BASE: visionerp.digital
+  APP_URL: https://visionerp.digital
+  LOG_CHANNEL: stack
+  DB_CONNECTION: system
+  TENANCY_HOST: mariadb.default
+  TENANCY_PORT: "3306"
+  TENANCY_DATABASE: vision
+  TENANCY_USERNAME: root
+  TENANCY_PASSWORD: 7mjgEpZgDG

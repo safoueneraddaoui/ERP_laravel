@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: vision
+  name: vision
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vision
+  template:
+    metadata:
+      labels:
+        app: vision
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: vision
+          image: registry.gitlab.com/raed.miled/vision-laravel:latest
+          envFrom:
+            - configMapRef:
+                name: vision
+          ports:
+            - containerPort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: vision
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: vision
+  type: ClusterIP
+
+---
+
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: vision
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+    - hosts:
+        - visionerp.digital
+      secretName: vision-tls
+    - hosts:
+        - '*.visionerp.digital'
+      secretName: vision-wildcard-tls
+  rules:
+    - host: visionerp.digital
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: vision
+                port:
+                  number: 80
+    - host: '*.visionerp.digital'
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: vision
+                port:
+                  number: 80

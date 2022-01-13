@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+    app:
+        build: .
+        ports: ["80:80"]
+        depends_on: ["db"]
+        networks: ["vision"]
+        container_name: vision-app
+        volumes: ["./:/var/www/html"]
+
+    db:
+        image: mariadb:10.4
+        networks: ["vision"]
+        container_name: vision-db
+        volumes: ["./devops/mysql:/docker-entrypoint-initdb.d", "db:/var/lib/mysql"]
+        environment:
+            MYSQL_DATABASE: vision
+            MYSQL_ROOT_PASSWORD: password
+
+    phpmyadmin:
+        image: phpmyadmin
+        ports: ["81:80"]
+        depends_on: ["db"]
+        networks: ["vision"]
+        container_name: phpmyadmin
+        environment:
+            PMA_ARBITRARY: "1"
+            PMA_HOST: "db"
+
+volumes:
+    db:
+
+networks:
+  vision:
+    driver: bridge
